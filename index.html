@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throughout Heaven and Earth, I alone am the Honoured one</title>
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Cropper.js for image editing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JSZip for zip downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            min-height: 95vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .drop-area {
+            border: 4px dashed #667eea;
+            border-radius: 15px;
+            padding: 50px 30px;
+            text-align: center;
+            background: #f8f9ff;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .drop-area:hover {
+            background: #f0e6ff;
+            border-color: #764ba2;
+            transform: translateY(-5px);
+        }
+
+        .drop-icon {
+            font-size: 64px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
+        }
+
+        .btn-purple {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+        }
+
+        .file-list {
+            margin: 25px 0;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f0e6ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.2s;
+        }
+
+        .file-item:hover {
+            transform: translateX(5px);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Editor Section */
+        .editor-section {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #f9f9ff;
+            border-radius: 15px;
+            border: 2px solid #e0e0ff;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 1100px) {
+            .editor-container {
+                flex-direction: column;
+            }
+        }
+
+        .image-editor {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .editor-controls {
+            flex: 0 0 350px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .editor-controls h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            background: #f0e6ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+
+        .filter-presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .filter-preset {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-preset:hover {
+            border-color: #667eea;
+            background: #f0e6ff;
+        }
+
+        .filter-preset.active {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+            transform: scale(1.05);
+        }
+
+        .cropper-container {
+            max-width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cropper-container img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+
+        .crop-controls {
+            margin-top: 15px;
+        }
+
+        .crop-aspect-ratio {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .aspect-btn {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .aspect-btn:hover {
+            border-color: #667eea;
+            background: #f0e6ff;
+        }
+
+        .aspect-btn.active {
+            border-color: #667eea;
+            background: #f0e6ff;
+            transform: scale(1.05);
+        }
+
+        /* Print Preview - FIXED NO GAP */
+        .print-preview-container {
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .print-preview-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .a4-pages {
+            display: flex;
+            flex-direction: column;
+            gap: 0 !important; /* REMOVED GAP BETWEEN PAGES */
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm; /* Fixed height for A4 */
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20mm;
+            border: 1px solid #ddd;
+            page-break-after: always;
+            page-break-inside: avoid;
+            margin: 0 !important; /* No margins */
+            position: relative;
+        }
+
+        .page-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            color: #667eea;
+            font-size: 1.4rem;
+        }
+
+        .webp-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            height: calc(100% - 80px); /* Account for header */
+            overflow: auto;
+        }
+
+        .webp-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f9f9f9;
+            page-break-inside: avoid;
+            flex-shrink: 0;
+        }
+
+        .webp-preview {
+            max-width: 100%;
+            max-height: 200px; /* Reduced to fit more images per page */
+            object-fit: contain;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            background: white;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .tab-btn:hover:not(.active):not(:disabled) {
+            color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: #f8f9ff;
+        }
+
+        .tab-btn:disabled {
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Print styles - FIXED NO GAP */
+        @media print {
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .container, .main-content, .print-preview-container {
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                background: white !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            /* Hide everything except print preview */
+            body * {
+                visibility: hidden;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-preview-container,
+            .print-preview-container * {
+                visibility: visible;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .print-preview-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white;
+            }
+
+            .a4-pages {
+                display: block;
+                margin: 0 !important;
+                padding: 0 !important;
+                gap: 0 !important;
+            }
+
+            .a4-page {
+                width: 210mm !important;
+                height: 297mm !important;
+                margin: 0 !important;
+                padding: 15mm !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                background: white !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                position: relative;
+                display: block;
+            }
+
+            .webp-container {
+                height: calc(100% - 50px);
+                overflow: visible;
+            }
+
+            .webp-item {
+                page-break-inside: avoid !important;
+                max-height: 250mm;
+            }
+
+            .webp-preview {
+                max-height: 180mm !important;
+                page-break-inside: avoid !important;
+            }
+
+            /* Ensure proper page breaks */
+            .a4-page:last-child {
+                page-break-after: auto !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .a4-page {
+                width: 100%;
+                padding: 10mm;
+                height: auto;
+                min-height: 297mm;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .editor-controls {
+                flex: 0 0 100%;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+
+        .webp-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.error {
+            background: #f44336;
+        }
+
+        .toast.warning {
+            background: #FF9800;
+        }
+
+        /* Page navigation in editor */
+        .page-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .page-navigation button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .page-navigation button:hover:not(:disabled) {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .page-navigation button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-weight: 600;
+            color: #667eea;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loadingText">Processing...</div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">✏️</div>
+            <h1>Converter</h1>
+            <p class="subtitle"></p>
+        </header>
+
+        <div class="main-content">
+            <div id="uploadSection">
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="upload">
+                        <i class="fas fa-upload"></i> Upload PDFs
+                    </button>
+                    <button class="tab-btn" data-tab="editor" id="editorTabBtn" disabled>
+                        <i class="fas fa-edit"></i> Edit Images
+                    </button>
+                    <button class="tab-btn" data-tab="print" id="printTabBtn" disabled>
+                        <i class="fas fa-print"></i> Print Preview
+                    </button>
+                </div>
+                
+                <div class="tab-content active" id="uploadTab">
+                    <div class="drop-area" id="dropArea">
+                        <div class="drop-icon">📄 → 🖼️</div>
+                        <h3 style="color: #667eea; margin-bottom: 10px;">Drag & Drop PDF Files Here</h3>
+                        <p style="margin-bottom: 20px; color: #666;">Supports multiple PDF files • Converts to WebP format • Advanced editing tools</p>
+                        <input type="file" id="pdfInput" class="file-input" accept=".pdf" multiple>
+                        <button class="btn" id="browseBtn">
+                            <i class="fas fa-folder-open"></i> Browse PDF Files
+                        </button>
+                    </div>
+
+                    <div id="fileSection" style="display: none;">
+                        <h3>Selected Files:</h3>
+                        <div class="file-list" id="fileList"></div>
+                        
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div id="progressText" style="text-align: center; margin: 10px 0; color: #667eea;"></div>
+
+                        <div style="text-align: center;">
+                            <button class="btn" id="convertBtn" disabled>
+                                <i class="fas fa-sync-alt"></i> Convert to WebP
+                            </button>
+                            <button class="btn btn-danger" id="clearBtn">
+                                <i class="fas fa-trash"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="editorTab">
+                    <div class="editor-section" id="editorSection">
+                        <div class="editor-header">
+                            <h2 style="color: #667eea;">
+                                <i class="fas fa-edit"></i> Image Editor
+                            </h2>
+                            <div class="page-navigation">
+                                <button id="prevPageBtn" disabled>
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </button>
+                                <div class="page-info">
+                                    Page <span id="currentPage">1</span> of <span id="totalPages">0</span>
+                                </div>
+                                <button id="nextPageBtn" disabled>
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="btn btn-info" id="saveEditsBtn">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button class="btn btn-warning" id="resetEditsBtn">
+                                    <i class="fas fa-undo"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="editor-container">
+                            <div class="image-editor">
+                                <h3>Edit Image</h3>
+                                <div class="cropper-container" id="cropperContainer">
+                                    <img id="imageToEdit" src="" alt="Image to edit">
+                                </div>
+                                
+                                <div class="crop-controls">
+                                    <h4>Crop Options:</h4>
+                                    <div class="crop-aspect-ratio">
+                                        <button class="aspect-btn" data-ratio="free">Free</button>
+                                        <button class="aspect-btn" data-ratio="1/1">Square (1:1)</button>
+                                        <button class="aspect-btn" data-ratio="4/3">Standard (4:3)</button>
+                                        <button class="aspect-btn" data-ratio="16/9">Widescreen (16:9)</button>
+                                        <button class="aspect-btn" data-ratio="A4">A4 Paper</button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-info" id="cropBtn">
+                                            <i class="fas fa-crop"></i> Apply Crop
+                                        </button>
+                                        <button class="btn" id="rotateLeftBtn">
+                                            <i class="fas fa-undo"></i> Rotate Left
+                                        </button>
+                                        <button class="btn" id="rotateRightBtn">
+                                            <i class="fas fa-redo"></i> Rotate Right
+                                        </button>
+                                        <button class="btn" id="flipHorizontalBtn">
+                                            <i class="fas fa-arrows-alt-h"></i> Flip H
+                                        </button>
+                                        <button class="btn" id="flipVerticalBtn">
+                                            <i class="fas fa-arrows-alt-v"></i> Flip V
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="editor-controls">
+                                <h3>Adjustments</h3>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">Brightness</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="brightnessSlider" min="0" max="200" value="100" step="1">
+                                        <span class="slider-value" id="brightnessValue">100%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">Contrast</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="contrastSlider" min="0" max="200" value="100" step="1">
+                                        <span class="slider-value" id="contrastValue">100%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">Saturation</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="saturationSlider" min="0" max="200" value="100" step="1">
+                                        <span class="slider-value" id="saturationValue">100%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">Blur</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="blurSlider" min="0" max="20" value="0" step="0.1">
+                                        <span class="slider-value" id="blurValue">0px</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">Filter Presets</label>
+                                    <div class="filter-presets">
+                                        <div class="filter-preset active" data-filter="none">None</div>
+                                        <div class="filter-preset" data-filter="grayscale">Grayscale</div>
+                                        <div class="filter-preset" data-filter="sepia">Sepia</div>
+                                        <div class="filter-preset" data-filter="invert">Invert</div>
+                                        <div class="filter-preset" data-filter="vibrant">Vibrant</div>
+                                        <div class="filter-preset" data-filter="cool">Cool Tone</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="btn-group">
+                                    <button class="btn btn-success" id="applyFiltersBtn">
+                                        <i class="fas fa-check"></i> Apply Filters
+                                    </button>
+                                    <button class="btn" id="resetFiltersBtn">
+                                        <i class="fas fa-times"></i> Reset Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="btn btn-purple" id="goToPrintBtn">
+                                <i class="fas fa-arrow-right"></i> Go to Print Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="printTab">
+                    <div class="print-preview-container" id="printPreviewSection">
+                        <h2 style="color: #4CAF50; margin-bottom: 20px;">
+                            <i class="fas fa-print"></i> Print Preview
+                        </h2>
+                        
+                        <div class="print-preview-controls no-print">
+                            <button class="btn btn-success" id="printAllBtn">
+                                <i class="fas fa-print"></i> Print All Pages
+                            </button>
+                            <button class="btn" id="downloadAllBtn">
+                                <i class="fas fa-download"></i> Download All WebP
+                            </button>
+                            <button class="btn btn-warning" id="newConversionBtn">
+                                <i class="fas fa-plus"></i> New Conversion
+                            </button>
+                            <button class="btn btn-info" id="backToEditorBtn">
+                                <i class="fas fa-arrow-left"></i> Back to Editor
+                            </button>
+                        </div>
+                        
+                        <div class="a4-pages" id="a4PagesContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // DOM Elements
+        const dropArea = document.getElementById('dropArea');
+        const pdfInput = document.getElementById('pdfInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const fileSection = document.getElementById('fileSection');
+        const fileList = document.getElementById('fileList');
+        const convertBtn = document.getElementById('convertBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        
+        // Tab elements
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const uploadTab = document.getElementById('uploadTab');
+        const editorTab = document.getElementById('editorTab');
+        const printTab = document.getElementById('printTab');
+        const editorTabBtn = document.getElementById('editorTabBtn');
+        const printTabBtn = document.getElementById('printTabBtn');
+        
+        // Editor elements
+        const editorSection = document.getElementById('editorSection');
+        const imageToEdit = document.getElementById('imageToEdit');
+        const cropperContainer = document.getElementById('cropperContainer');
+        const saveEditsBtn = document.getElementById('saveEditsBtn');
+        const resetEditsBtn = document.getElementById('resetEditsBtn');
+        const cropBtn = document.getElementById('cropBtn');
+        const rotateLeftBtn = document.getElementById('rotateLeftBtn');
+        const rotateRightBtn = document.getElementById('rotateRightBtn');
+        const flipHorizontalBtn = document.getElementById('flipHorizontalBtn');
+        const flipVerticalBtn = document.getElementById('flipVerticalBtn');
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        const goToPrintBtn = document.getElementById('goToPrintBtn');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const currentPageEl = document.getElementById('currentPage');
+        const totalPagesEl = document.getElementById('totalPages');
+        
+        // Sliders and values
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        const contrastSlider = document.getElementById('contrastSlider');
+        const saturationSlider = document.getElementById('saturationSlider');
+        const blurSlider = document.getElementById('blurSlider');
+        const brightnessValue = document.getElementById('brightnessValue');
+        const contrastValue = document.getElementById('contrastValue');
+        const saturationValue = document.getElementById('saturationValue');
+        const blurValue = document.getElementById('blurValue');
+        
+        // Print preview elements
+        const printPreviewSection = document.getElementById('printPreviewSection');
+        const a4PagesContainer = document.getElementById('a4PagesContainer');
+        const printAllBtn = document.getElementById('printAllBtn');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const newConversionBtn = document.getElementById('newConversionBtn');
+        const backToEditorBtn = document.getElementById('backToEditorBtn');
+        
+        // UI Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        const toast = document.getElementById('toast');
+
+        // State
+        let selectedFiles = [];
+        let convertedPages = [];
+        let currentPageIndex = 0;
+        let cropper = null;
+        let originalImageData = null;
+        let currentFilters = {
+            brightness: 100,
+            contrast: 100,
+            saturation: 100,
+            blur: 0,
+            filter: 'none'
+        };
+
+        // Initialize
+        function init() {
+            console.log('WebP Editor & Converter initialized');
+            
+            // Set up event listeners
+            browseBtn.addEventListener('click', () => pdfInput.click());
+            pdfInput.addEventListener('change', handleFileSelect);
+            dropArea.addEventListener('click', () => pdfInput.click());
+            
+            // Drag and drop
+            setupDragAndDrop();
+            
+            // Button events
+            convertBtn.addEventListener('click', convertPDFToWebP);
+            clearBtn.addEventListener('click', clearFiles);
+            printAllBtn.addEventListener('click', printAllPages);
+            downloadAllBtn.addEventListener('click', downloadAllWebP);
+            newConversionBtn.addEventListener('click', resetConverter);
+            
+            // Tab switching
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!btn.disabled) {
+                        const tabId = btn.getAttribute('data-tab');
+                        switchTab(tabId);
+                    }
+                });
+            });
+            
+            // Editor events
+            saveEditsBtn.addEventListener('click', saveEdits);
+            resetEditsBtn.addEventListener('click', resetEdits);
+            cropBtn.addEventListener('click', applyCrop);
+            rotateLeftBtn.addEventListener('click', () => rotateImage(-90));
+            rotateRightBtn.addEventListener('click', () => rotateImage(90));
+            flipHorizontalBtn.addEventListener('click', () => flipImage('horizontal'));
+            flipVerticalBtn.addEventListener('click', () => flipImage('vertical'));
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            resetFiltersBtn.addEventListener('click', resetFilters);
+            goToPrintBtn.addEventListener('click', () => switchTab('print'));
+            backToEditorBtn.addEventListener('click', () => switchTab('editor'));
+            
+            // Page navigation
+            prevPageBtn.addEventListener('click', () => navigatePage(-1));
+            nextPageBtn.addEventListener('click', () => navigatePage(1));
+            
+            // Slider events
+            brightnessSlider.addEventListener('input', updateFilterValue);
+            contrastSlider.addEventListener('input', updateFilterValue);
+            saturationSlider.addEventListener('input', updateFilterValue);
+            blurSlider.addEventListener('input', updateFilterValue);
+            
+            // Aspect ratio buttons
+            document.querySelectorAll('.aspect-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    setAspectRatio(this.getAttribute('data-ratio'));
+                });
+            });
+            
+            // Filter presets
+            document.querySelectorAll('.filter-preset').forEach(preset => {
+                preset.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-preset').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    applyFilterPreset(this.getAttribute('data-filter'));
+                });
+            });
+            
+            // Show initial instructions
+            showToast('Ready to convert PDFs to WebP!', 'success');
+        }
+
+        // UI Functions
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function showLoading(text = 'Processing...') {
+            loadingText.textContent = text;
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+
+        // Drag and drop setup
+        function setupDragAndDrop() {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.style.backgroundColor = '#f0e6ff';
+                    dropArea.style.borderColor = '#764ba2';
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.style.backgroundColor = '#f8f9ff';
+                    dropArea.style.borderColor = '#667eea';
+                }, false);
+            });
+
+            dropArea.addEventListener('drop', handleDrop, false);
+        }
+
+        function handleDrop(e) {
+            const files = e.dataTransfer.files;
+            handleFileSelect({ target: { files } });
+        }
+
+        // File handling
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            let validFiles = 0;
+            
+            files.forEach(file => {
+                if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                    selectedFiles.push({
+                        name: file.name,
+                        size: formatFileSize(file.size),
+                        file: file,
+                        url: URL.createObjectURL(file)
+                    });
+                    validFiles++;
+                }
+            });
+
+            if (validFiles > 0) {
+                updateFileList();
+                showToast(`Added ${validFiles} PDF file${validFiles > 1 ? 's' : ''}`, 'success');
+            } else if (files.length > 0) {
+                showToast('Please select only PDF files', 'error');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileSection.style.display = 'none';
+                convertBtn.disabled = true;
+                return;
+            }
+
+            fileSection.style.display = 'block';
+            convertBtn.disabled = false;
+            
+            fileList.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${file.name}</strong><br>
+                        <small>${file.size}</small>
+                    </div>
+                    <button onclick="removeFile(${index})" style="
+                        background: #f44336;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        transition: all 0.2s;
+                    ">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                `;
+                fileList.appendChild(div);
+            });
+        }
+
+        function removeFile(index) {
+            URL.revokeObjectURL(selectedFiles[index].url);
+            selectedFiles.splice(index, 1);
+            updateFileList();
+            showToast('File removed', 'warning');
+        }
+
+        function clearFiles() {
+            selectedFiles.forEach(file => URL.revokeObjectURL(file.url));
+            selectedFiles = [];
+            updateFileList();
+            showToast('All files cleared', 'warning');
+        }
+
+        // Tab switching
+        function switchTab(tabId) {
+            // Update tab buttons
+            tabBtns.forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+            
+            // Enable/disable tabs
+            if (tabId === 'editor' && convertedPages.length > 0) {
+                editorSection.style.display = 'block';
+                loadImageForEditing(currentPageIndex);
+                updatePageNavigation();
+            } else if (tabId === 'print' && convertedPages.length > 0) {
+                displayWebPOnA4Pages();
+            }
+        }
+
+        // Main conversion function - PDF to WebP
+        async function convertPDFToWebP() {
+            if (selectedFiles.length === 0) {
+                showToast('Please select PDF files first', 'error');
+                return;
+            }
+
+            // Show loading
+            showLoading('Preparing conversion...');
+            
+            // Show progress
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Starting conversion to WebP...';
+            convertBtn.disabled = true;
+
+            // Reset
+            convertedPages = [];
+            currentPageIndex = 0;
+
+            try {
+                // Count total pages
+                let totalPages = 0;
+                for (const file of selectedFiles) {
+                    try {
+                        const pdf = await pdfjsLib.getDocument(file.url).promise;
+                        totalPages += pdf.numPages;
+                    } catch (error) {
+                        console.error('Error loading PDF:', error);
+                    }
+                }
+
+                if (totalPages === 0) {
+                    hideLoading();
+                    showToast('No pages found in the selected PDFs', 'error');
+                    return;
+                }
+
+                let processedPages = 0;
+
+                // Process each file
+                for (let fileIndex = 0; fileIndex < selectedFiles.length; fileIndex++) {
+                    const file = selectedFiles[fileIndex];
+                    
+                    try {
+                        // Load PDF
+                        const pdf = await pdfjsLib.getDocument(file.url).promise;
+                        
+                        // Process each page
+                        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                            // Update progress
+                            processedPages++;
+                            const progress = (processedPages / totalPages) * 100;
+                            progressBar.style.width = `${progress}%`;
+                            progressText.textContent = `Converting page ${processedPages} of ${totalPages} to WebP...`;
+
+                            // Get page
+                            const page = await pdf.getPage(pageNum);
+                            
+                            // Set scale for quality
+                            const scale = 2;
+                            const viewport = page.getViewport({ scale });
+                            
+                            // Create canvas
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.width = viewport.width;
+                            canvas.height = viewport.height;
+                            
+                            // Render PDF to canvas
+                            await page.render({
+                                canvasContext: context,
+                                viewport: viewport
+                            }).promise;
+                            
+                            // Convert to WebP with transparency
+                            const webpDataUrl = await canvasToWebP(canvas, 0.9);
+                            
+                            // Store WebP
+                            convertedPages.push({
+                                id: `${fileIndex}-${pageNum}`,
+                                name: `${file.name.replace('.pdf', '')}_page${pageNum}.webp`,
+                                dataUrl: webpDataUrl,
+                                width: canvas.width,
+                                height: canvas.height,
+                                sourceFile: file.name,
+                                pageNumber: pageNum,
+                                format: 'webp',
+                                size: formatFileSize(webpDataUrl.length),
+                                originalDataUrl: webpDataUrl // Store original for reset
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`Error converting ${file.name}:`, error);
+                        progressText.textContent = `Error converting ${file.name}. Please try again.`;
+                    }
+                }
+
+                // Hide progress
+                progressContainer.style.display = 'none';
+                hideLoading();
+                
+                // Enable editor and print tabs
+                editorTabBtn.disabled = false;
+                printTabBtn.disabled = false;
+                
+                // Switch to editor tab
+                switchTab('editor');
+                
+                showToast(`Successfully converted ${convertedPages.length} pages to WebP!`, 'success');
+            } catch (error) {
+                hideLoading();
+                showToast('Conversion failed. Please try again.', 'error');
+                console.error('Conversion error:', error);
+            }
+        }
+
+        // Convert canvas to WebP format with transparency
+        function canvasToWebP(canvas, quality = 0.85) {
+            return new Promise((resolve) => {
+                try {
+                    // Create an offscreen canvas
+                    const tmp = document.createElement('canvas');
+                    tmp.width = canvas.width;
+                    tmp.height = canvas.height;
+                    const ctx = tmp.getContext('2d');
+                    ctx.drawImage(canvas, 0, 0);
+
+                    // Remove near-white background
+                    try {
+                        const imageData = ctx.getImageData(0, 0, tmp.width, tmp.height);
+                        const data = imageData.data;
+                        const THRESHOLD = 250;
+                        for (let i = 0; i < data.length; i += 4) {
+                            const r = data[i];
+                            const g = data[i + 1];
+                            const b = data[i + 2];
+                            const a = data[i + 3];
+                            if (a > 0 && r >= THRESHOLD && g >= THRESHOLD && b >= THRESHOLD) {
+                                data[i + 3] = 0;
+                            }
+                        }
+                        ctx.putImageData(imageData, 0, 0);
+                    } catch (err) {
+                        console.warn('Could not access image data:', err);
+                    }
+
+                    if (tmp.toBlob) {
+                        tmp.toBlob(function(blob) {
+                            const reader = new FileReader();
+                            reader.onloadend = function() {
+                                resolve(reader.result);
+                            };
+                            reader.readAsDataURL(blob);
+                        }, 'image/webp', quality);
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('canvasToWebP fallback triggered:', e);
+                }
+
+                // Fallback
+                try {
+                    resolve(canvas.toDataURL('image/png'));
+                } catch (e) {
+                    const empty = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                    resolve(empty);
+                }
+            });
+        }
+
+        // Image editing functions
+        function loadImageForEditing(index) {
+            if (index < 0 || index >= convertedPages.length) return;
+            
+            currentPageIndex = index;
+            const page = convertedPages[index];
+            
+            // Set image source
+            imageToEdit.src = page.dataUrl;
+            imageToEdit.alt = `Editing: ${page.name}`;
+            
+            // Destroy previous cropper
+            if (cropper) {
+                cropper.destroy();
+            }
+            
+            // Initialize cropper when image loads
+            imageToEdit.onload = function() {
+                // Store original data
+                originalImageData = page.dataUrl;
+                
+                // Initialize cropper
+                cropper = new Cropper(imageToEdit, {
+                    aspectRatio: NaN, // Free aspect ratio
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    restore: true,
+                    checkCrossOrigin: false,
+                    background: false
+                });
+                
+                // Reset filters
+                resetFilterSliders();
+                document.querySelector('.filter-preset[data-filter="none"]').classList.add('active');
+                document.querySelectorAll('.filter-preset').forEach(p => {
+                    if (p.getAttribute('data-filter') !== 'none') p.classList.remove('active');
+                });
+            };
+            
+            // Update current page display
+            currentPageEl.textContent = index + 1;
+            totalPagesEl.textContent = convertedPages.length;
+            
+            // Update navigation buttons
+            updatePageNavigation();
+        }
+
+        function navigatePage(direction) {
+            const newIndex = currentPageIndex + direction;
+            if (newIndex >= 0 && newIndex < convertedPages.length) {
+                loadImageForEditing(newIndex);
+            }
+        }
+
+        function updatePageNavigation() {
+            prevPageBtn.disabled = currentPageIndex === 0;
+            nextPageBtn.disabled = currentPageIndex === convertedPages.length - 1;
+        }
+
+        function setAspectRatio(ratio) {
+            if (!cropper) return;
+            
+            let aspectRatio = NaN; // Free
+            switch(ratio) {
+                case '1/1': aspectRatio = 1; break;
+                case '4/3': aspectRatio = 4/3; break;
+                case '16/9': aspectRatio = 16/9; break;
+                case 'A4': aspectRatio = 210/297; break; // A4 aspect ratio
+            }
+            
+            cropper.setAspectRatio(aspectRatio);
+        }
+
+        function applyCrop() {
+            if (!cropper) return;
+            
+            const canvas = cropper.getCroppedCanvas();
+            if (!canvas) return;
+            
+            // Update image preview
+            cropper.replace(canvas.toDataURL('image/webp'));
+            
+            // Update the converted page data
+            updatePageData(canvas.toDataURL('image/webp'));
+            
+            showToast('Crop applied successfully!', 'success');
+        }
+
+        function rotateImage(degrees) {
+            if (!cropper) return;
+            
+            cropper.rotate(degrees);
+        }
+
+        function flipImage(direction) {
+            if (!cropper) return;
+            
+            if (direction === 'horizontal') {
+                cropper.scaleX(-cropper.getData().scaleX || -1);
+            } else {
+                cropper.scaleY(-cropper.getData().scaleY || -1);
+            }
+        }
+
+        function updateFilterValue() {
+            // Update display values
+            brightnessValue.textContent = `${brightnessSlider.value}%`;
+            contrastValue.textContent = `${contrastSlider.value}%`;
+            saturationValue.textContent = `${saturationSlider.value}%`;
+            blurValue.textContent = `${blurSlider.value}px`;
+            
+            // Update current filters
+            currentFilters.brightness = parseInt(brightnessSlider.value);
+            currentFilters.contrast = parseInt(contrastSlider.value);
+            currentFilters.saturation = parseInt(saturationSlider.value);
+            currentFilters.blur = parseFloat(blurSlider.value);
+            
+            // Preview filter on image
+            previewFilters();
+        }
+
+        function previewFilters() {
+            if (!cropper || !cropper.getCroppedCanvas) return;
+            
+            const canvas = cropper.getCroppedCanvas();
+            if (!canvas) return;
+            
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            
+            // Apply filters
+            ctx.filter = `
+                brightness(${currentFilters.brightness}%)
+                contrast(${currentFilters.contrast}%)
+                saturate(${currentFilters.saturation}%)
+                blur(${currentFilters.blur}px)
+            `;
+            
+            ctx.drawImage(canvas, 0, 0);
+            
+            // Apply additional filter preset
+            applyFilterPresetToCanvas(tempCanvas, currentFilters.filter);
+            
+            // Update cropper preview
+            cropper.replace(tempCanvas.toDataURL('image/webp'));
+        }
+
+        function applyFilterPreset(filterName) {
+            currentFilters.filter = filterName;
+            
+            // Reset other filters if preset is 'none'
+            if (filterName === 'none') {
+                resetFilterSliders();
+            }
+            
+            previewFilters();
+        }
+
+        function applyFilterPresetToCanvas(canvas, filterName) {
+            const ctx = canvas.getContext('2d');
+            
+            switch(filterName) {
+                case 'grayscale':
+                    ctx.filter += ' grayscale(100%)';
+                    break;
+                case 'sepia':
+                    ctx.filter += ' sepia(100%)';
+                    break;
+                case 'invert':
+                    ctx.filter += ' invert(100%)';
+                    break;
+                case 'vibrant':
+                    ctx.filter += ' saturate(150%) contrast(120%)';
+                    break;
+                case 'cool':
+                    // Apply blue tint
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        data[i] = Math.min(data[i] * 0.9, 255);     // Reduce red
+                        data[i + 2] = Math.min(data[i + 2] * 1.1, 255); // Increase blue
+                    }
+                    ctx.putImageData(imageData, 0, 0);
+                    break;
+            }
+        }
+
+        function applyFilters() {
+            if (!cropper) return;
+            
+            const canvas = cropper.getCroppedCanvas();
+            if (!canvas) return;
+            
+            // Apply all filters
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            
+            ctx.filter = `
+                brightness(${currentFilters.brightness}%)
+                contrast(${currentFilters.contrast}%)
+                saturate(${currentFilters.saturation}%)
+                blur(${currentFilters.blur}px)
+            `;
+            
+            ctx.drawImage(canvas, 0, 0);
+            
+            // Apply additional filter preset
+            applyFilterPresetToCanvas(tempCanvas, currentFilters.filter);
+            
+            // Update the converted page data
+            updatePageData(tempCanvas.toDataURL('image/webp'));
+            
+            // Reset cropper with new image
+            cropper.replace(tempCanvas.toDataURL('image/webp'));
+            
+            showToast('Filters applied successfully!', 'success');
+        }
+
+        function resetFilters() {
+            resetFilterSliders();
+            currentFilters.filter = 'none';
+            
+            document.querySelectorAll('.filter-preset').forEach(p => p.classList.remove('active'));
+            document.querySelector('.filter-preset[data-filter="none"]').classList.add('active');
+            
+            if (cropper) {
+                // Reset to original cropped image
+                const canvas = cropper.getCroppedCanvas();
+                if (canvas) {
+                    cropper.replace(canvas.toDataURL('image/webp'));
+                }
+            }
+            
+            showToast('Filters reset to default', 'warning');
+        }
+
+        function resetFilterSliders() {
+            brightnessSlider.value = 100;
+            contrastSlider.value = 100;
+            saturationSlider.value = 100;
+            blurSlider.value = 0;
+            
+            brightnessValue.textContent = '100%';
+            contrastValue.textContent = '100%';
+            saturationValue.textContent = '100%';
+            blurValue.textContent = '0px';
+            
+            currentFilters.brightness = 100;
+            currentFilters.contrast = 100;
+            currentFilters.saturation = 100;
+            currentFilters.blur = 0;
+        }
+
+        function saveEdits() {
+            if (!cropper) return;
+            
+            const canvas = cropper.getCroppedCanvas();
+            if (!canvas) return;
+            
+            // Update the converted page data
+            updatePageData(canvas.toDataURL('image/webp'));
+            
+            showToast('Edits saved successfully!', 'success');
+        }
+
+        function resetEdits() {
+            if (!cropper || !originalImageData) return;
+            
+            // Reset to original image
+            cropper.replace(originalImageData);
+            
+            // Reset filters
+            resetFilters();
+            
+            showToast('Edits reset to original image', 'warning');
+        }
+
+        function updatePageData(dataUrl) {
+            if (currentPageIndex >= 0 && currentPageIndex < convertedPages.length) {
+                convertedPages[currentPageIndex].dataUrl = dataUrl;
+                convertedPages[currentPageIndex].size = formatFileSize(dataUrl.length);
+            }
+        }
+
+        // Display WebP images on A4 pages - FIXED NO GAP
+        function displayWebPOnA4Pages() {
+            if (convertedPages.length === 0) {
+                a4PagesContainer.innerHTML = '<p style="text-align: center; color: #f44336; padding: 40px;">No WebP images were generated.</p>';
+                return;
+            }
+
+            // Clear previous content
+            a4PagesContainer.innerHTML = '';
+
+            // Group pages (max 3 per A4 for better fit)
+            const pagesPerA4 = 3;
+            const a4Pages = [];
+
+            for (let i = 0; i < convertedPages.length; i += pagesPerA4) {
+                a4Pages.push(convertedPages.slice(i, i + pagesPerA4));
+            }
+
+            // Create A4 pages
+            a4Pages.forEach((pageGroup, pageIndex) => {
+                const a4Page = document.createElement('div');
+                a4Page.className = 'a4-page';
+                
+                // Page header
+                const header = document.createElement('div');
+                header.className = 'page-header';
+                header.innerHTML = `📄 Page ${pageIndex + 1} of ${a4Pages.length} <span class="webp-badge">WebP</span>`;
+                a4Page.appendChild(header);
+
+                // WebP container
+                const webpContainer = document.createElement('div');
+                webpContainer.className = 'webp-container';
+
+                // Add each WebP
+                pageGroup.forEach((webp, index) => {
+                    const webpItem = document.createElement('div');
+                    webpItem.className = 'webp-item';
+                    
+                    const img = document.createElement('img');
+                    img.className = 'webp-preview';
+                    img.src = webp.dataUrl;
+                    img.alt = webp.name;
+                    img.loading = 'lazy';
+                    img.style.maxHeight = '200px'; // Consistent height
+                    
+                    webpItem.appendChild(img);
+                    webpContainer.appendChild(webpItem);
+                });
+
+                a4Page.appendChild(webpContainer);
+                a4PagesContainer.appendChild(a4Page);
+            });
+        }
+
+        // Print all pages with proper handling - FIXED NO GAP
+        function printAllPages() {
+            if (convertedPages.length === 0) {
+                showToast('No pages to print', 'error');
+                return;
+            }
+            
+            showLoading('Preparing for printing...');
+            
+            // First, ensure all images are loaded
+            const images = document.querySelectorAll('img[src*="data:image"]');
+            let loadedCount = 0;
+            const totalImages = images.length;
+            
+            if (totalImages === 0) {
+                triggerPrint();
+                return;
+            }
+            
+            // Check if all images are loaded
+            images.forEach(img => {
+                if (img.complete) {
+                    loadedCount++;
+                } else {
+                    img.addEventListener('load', () => {
+                        loadedCount++;
+                        if (loadedCount === totalImages) {
+                            triggerPrint();
+                        }
+                    });
+                    img.addEventListener('error', () => {
+                        loadedCount++; // Count errors as loaded to avoid infinite wait
+                        if (loadedCount === totalImages) {
+                            triggerPrint();
+                        }
+                    });
+                }
+            });
+            
+            // If all images are already loaded
+            if (loadedCount === totalImages) {
+                triggerPrint();
+            }
+        }
+
+        function triggerPrint() {
+            hideLoading();
+            
+            // Add print-specific styles that remove all gaps
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @media print {
+                    body, html {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: 100% !important;
+                        background: white !important;
+                    }
+                    
+                    /* Hide everything except print content */
+                    body * {
+                        visibility: hidden !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    
+                    .print-preview-container,
+                    .print-preview-container * {
+                        visibility: visible !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    
+                    .print-preview-container {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        background: white !important;
+                    }
+                    
+                    .no-print {
+                        display: none !important;
+                    }
+                    
+                    .a4-pages {
+                        display: block !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    
+                    .a4-page {
+                        width: 210mm !important;
+                        height: 297mm !important;
+                        margin: 0 !important;
+                        padding: 15mm !important;
+                        box-shadow: none !important;
+                        border: 1px solid #ccc !important;
+                        background: white !important;
+                        page-break-after: always !important;
+                        page-break-inside: avoid !important;
+                        position: relative !important;
+                        display: block !important;
+                    }
+                    
+                    /* Remove any remaining gaps */
+                    .a4-page:last-child {
+                        page-break-after: auto !important;
+                    }
+                    
+                    .webp-container {
+                        height: calc(100% - 50px) !important;
+                    }
+                    
+                    .webp-item {
+                        margin-bottom: 10mm !important;
+                    }
+                    
+                    .webp-preview {
+                        max-height: 180mm !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Trigger print dialog
+            setTimeout(() => {
+                window.print();
+            }, 100);
+            
+            // Clean up after printing
+            setTimeout(() => {
+                style.remove();
+            }, 1000);
+        }
+
+        // Handle afterprint event to restore UI
+        window.addEventListener('afterprint', function() {
+            showToast('Print completed!', 'success');
+        });
+
+        // Download all WebP images
+        async function downloadAllWebP() {
+            if (convertedPages.length === 0) {
+                showToast('No WebP images to download', 'error');
+                return;
+            }
+
+            showLoading('Preparing download...');
+
+            try {
+                // Use JSZip for zipping files
+                const zip = new JSZip();
+                
+                convertedPages.forEach((webp, index) => {
+                    const base64Data = webp.dataUrl.split(',')[1];
+                    zip.file(webp.name, base64Data, { base64: true });
+                });
+
+                const content = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'webp_converted_files.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                hideLoading();
+                showToast(`Downloaded ${convertedPages.length} WebP files as ZIP`, 'success');
+            } catch (error) {
+                hideLoading();
+                console.error('Download error:', error);
+                
+                // Simple fallback - download first file only
+                if (convertedPages.length > 0) {
+                    const a = document.createElement('a');
+                    a.href = convertedPages[0].dataUrl;
+                    a.download = convertedPages[0].name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showToast('Downloaded first WebP file (fallback)', 'warning');
+                }
+            }
+        }
+
+        // Reset converter
+        function resetConverter() {
+            // Clean up
+            selectedFiles.forEach(file => URL.revokeObjectURL(file.url));
+            selectedFiles = [];
+            convertedPages = [];
+            currentPageIndex = 0;
+            
+            // Destroy cropper if exists
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            
+            // Reset UI
+            switchTab('upload');
+            editorTabBtn.disabled = true;
+            printTabBtn.disabled = true;
+            fileSection.style.display = 'none';
+            progressContainer.style.display = 'none';
+            convertBtn.disabled = true;
+            editorSection.style.display = 'none';
+            
+            // Reset file input
+            pdfInput.value = '';
+            
+            // Clear preview
+            a4PagesContainer.innerHTML = '';
+            
+            showToast('Ready for new conversion!', 'success');
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            
+            // Make functions available globally
+            window.removeFile = removeFile;
+        });
+    </script>
+</body>
+</html>

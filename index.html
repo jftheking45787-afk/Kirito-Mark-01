@@ -403,13 +403,106 @@
             transform: scale(1.05);
         }
 
-        /* Print Preview - FIXED NO GAP */
+        /* Print Preview and Edit Section */
         .print-preview-container {
             margin-top: 30px;
             animation: fadeIn 0.5s ease;
         }
 
-        .print-preview-controls {
+        .print-edit-controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e0e0ff;
+        }
+
+        .print-edit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .print-edit-group {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .print-edit-group h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .print-edit-group h4 i {
+            font-size: 18px;
+        }
+
+        .print-presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .print-preset {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            background: white;
+        }
+
+        .print-preset:hover {
+            border-color: #667eea;
+            background: #f0e6ff;
+            transform: translateY(-2px);
+        }
+
+        .print-preset.active {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+            transform: scale(1.05);
+        }
+
+        .print-preset i {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .preview-controls {
             display: flex;
             justify-content: center;
             gap: 15px;
@@ -420,7 +513,7 @@
         .a4-pages {
             display: flex;
             flex-direction: column;
-            gap: 0 !important; /* REMOVED GAP BETWEEN PAGES */
+            gap: 0 !important;
             align-items: center;
             margin: 0;
             padding: 0;
@@ -428,14 +521,14 @@
 
         .a4-page {
             width: 210mm;
-            height: 297mm; /* Fixed height for A4 */
+            height: 297mm;
             background: white;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 20mm;
             border: 1px solid #ddd;
             page-break-after: always;
             page-break-inside: avoid;
-            margin: 0 !important; /* No margins */
+            margin: 0 !important;
             position: relative;
         }
 
@@ -452,7 +545,7 @@
             display: flex;
             flex-direction: column;
             gap: 30px;
-            height: calc(100% - 80px); /* Account for header */
+            height: calc(100% - 80px);
             overflow: auto;
         }
 
@@ -463,11 +556,12 @@
             background: #f9f9f9;
             page-break-inside: avoid;
             flex-shrink: 0;
+            transition: all 0.3s;
+            position: relative;
         }
 
         .webp-preview {
             max-width: 100%;
-            max-height: 200px; /* Reduced to fit more images per page */
             object-fit: contain;
             margin-bottom: 15px;
             border: 1px solid #ddd;
@@ -475,6 +569,17 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+            transition: all 0.3s;
+        }
+
+        .webp-info {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            padding: 5px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin-top: 5px;
         }
 
         .controls {
@@ -533,7 +638,7 @@
             display: block;
         }
 
-        /* Print styles - FIXED NO GAP */
+        /* Print styles - CLEAN PRINT (NO HEADER/INFO) */
         @media print {
             body {
                 margin: 0 !important;
@@ -553,7 +658,7 @@
                 display: none !important;
             }
 
-            /* Hide everything except print preview */
+            /* Hide everything except images for printing */
             body * {
                 visibility: hidden;
                 margin: 0 !important;
@@ -589,9 +694,9 @@
                 width: 210mm !important;
                 height: 297mm !important;
                 margin: 0 !important;
-                padding: 15mm !important;
+                padding: ${printSettings.pageMargin}mm !important;
                 box-shadow: none !important;
-                border: 1px solid #ccc !important;
+                border: none !important; /* Remove border for print */
                 background: white !important;
                 page-break-after: always !important;
                 page-break-inside: avoid !important;
@@ -599,22 +704,40 @@
                 display: block;
             }
 
+            /* REMOVE HEADERS AND INFO FOR PRINT */
+            .page-header,
+            .webp-info {
+                display: none !important;
+            }
+
             .webp-container {
-                height: calc(100% - 50px);
-                overflow: visible;
+                height: 100% !important; /* Full height since no header */
+                gap: ${printSettings.imageSpacing}mm !important;
+                padding: 0 !important;
             }
 
             .webp-item {
+                margin-bottom: ${printSettings.imageSpacing}mm !important;
+                border: none !important; /* Remove border for clean print */
+                background: transparent !important; /* Transparent background */
+                padding: 0 !important; /* Remove padding */
+                border-radius: 0 !important; /* Remove border radius */
+                box-shadow: none !important; /* Remove shadow */
                 page-break-inside: avoid !important;
-                max-height: 250mm;
             }
 
             .webp-preview {
-                max-height: 180mm !important;
-                page-break-inside: avoid !important;
+                max-height: ${printSettings.maxHeight * (printSettings.imageSize / 100)}mm !important;
+                max-width: ${printSettings.maxWidth * (printSettings.imageSize / 100)}% !important;
+                filter: ${printSettings.grayscalePrint ? 'grayscale(100%)' : 'none'} !important;
+                border: none !important; /* Remove image border */
+                background: transparent !important; /* Transparent background */
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
             }
 
-            /* Ensure proper page breaks */
+            /* Remove any remaining gaps */
             .a4-page:last-child {
                 page-break-after: auto !important;
             }
@@ -654,6 +777,10 @@
                 font-size: 14px;
                 flex: 1;
                 min-width: 120px;
+            }
+            
+            .print-edit-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -768,6 +895,51 @@
             border-radius: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
+        /* Print edit specific */
+        .print-size-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .size-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .size-input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .size-unit {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 40px;
+        }
+
+        .range-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .range-min {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .range-max {
+            color: #999;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -783,8 +955,8 @@
     <div class="container">
         <header>
             <div class="logo">✏️</div>
-            <h1>Converter</h1>
-            <p class="subtitle"></p>
+            <h1>Convert </h1>
+            <p class="subtitle">customization</p>
         </header>
 
         <div class="main-content">
@@ -797,7 +969,7 @@
                         <i class="fas fa-edit"></i> Edit Images
                     </button>
                     <button class="tab-btn" data-tab="print" id="printTabBtn" disabled>
-                        <i class="fas fa-print"></i> Print Preview
+                        <i class="fas fa-print"></i> Print Preview & Edit
                     </button>
                 </div>
                 
@@ -805,7 +977,7 @@
                     <div class="drop-area" id="dropArea">
                         <div class="drop-icon">📄 → 🖼️</div>
                         <h3 style="color: #667eea; margin-bottom: 10px;">Drag & Drop PDF Files Here</h3>
-                        <p style="margin-bottom: 20px; color: #666;">Supports multiple PDF files • Converts to WebP format • Advanced editing tools</p>
+                        <p style="margin-bottom: 20px; color: #666;">Supports multiple PDF files • Converts to WebP format • editing tools</p>
                         <input type="file" id="pdfInput" class="file-input" accept=".pdf" multiple>
                         <button class="btn" id="browseBtn">
                             <i class="fas fa-folder-open"></i> Browse PDF Files
@@ -955,7 +1127,7 @@
                         
                         <div style="text-align: center; margin-top: 30px;">
                             <button class="btn btn-purple" id="goToPrintBtn">
-                                <i class="fas fa-arrow-right"></i> Go to Print Preview
+                                <i class="fas fa-arrow-right"></i> Go to Print Preview & Edit
                             </button>
                         </div>
                     </div>
@@ -964,8 +1136,162 @@
                 <div class="tab-content" id="printTab">
                     <div class="print-preview-container" id="printPreviewSection">
                         <h2 style="color: #4CAF50; margin-bottom: 20px;">
-                            <i class="fas fa-print"></i> Print Preview
+                            <i class="fas fa-print"></i> Print Preview & Edit
                         </h2>
+                        
+                        <!-- PRINT EDIT CONTROLS -->
+                        <div class="print-edit-controls no-print">
+                            <h3 style="color: #667eea; margin-bottom: 15px;">
+                                <i class="fas fa-sliders-h"></i> Print Settings & Layout
+                            </h3>
+                            
+                            <div class="print-edit-grid">
+                                <!-- Layout Settings -->
+                                <div class="print-edit-group">
+                                    <h4><i class="fas fa-th"></i> Layout</h4>
+                                    <div class="print-presets">
+                                        <div class="print-preset active" data-layout="single">
+                                            <i class="fas fa-image"></i>
+                                            Single
+                                        </div>
+                                        <div class="print-preset" data-layout="double">
+                                            <i class="fas fa-images"></i>
+                                            Double
+                                        </div>
+                                        <div class="print-preset" data-layout="triple">
+                                            <i class="fas fa-layer-group"></i>
+                                            Triple
+                                        </div>
+                                        <div class="print-preset" data-layout="quad">
+                                            <i class="fas fa-th-large"></i>
+                                            Quad
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="fitToPage" checked>
+                                        <label for="fitToPage">Fit to page</label>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="centerImages" checked>
+                                        <label for="centerImages">Center images</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Size Settings -->
+                                <div class="print-edit-group">
+                                    <h4><i class="fas fa-expand-alt"></i> Size & Scale</h4>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label">Image Size (%)</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="imageSizeSlider" min="10" max="200" value="100" step="1">
+                                            <span class="slider-value" id="imageSizeValue">100%</span>
+                                        </div>
+                                        <div class="range-display">
+                                            <span class="range-min">10%</span>
+                                            <span class="range-max">200%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label">Max Height (mm)</label>
+                                        <div class="print-size-control">
+                                            <input type="number" id="maxHeightInput" class="size-input" min="10" max="250" value="180">
+                                            <span class="size-unit">mm</span>
+                                            <input type="range" id="maxHeightSlider" min="10" max="250" value="180" step="1" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label">Max Width (%)</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="maxWidthSlider" min="10" max="100" value="90" step="1">
+                                            <span class="slider-value" id="maxWidthValue">90%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Spacing & Margins -->
+                                <div class="print-edit-group">
+                                    <h4><i class="fas fa-border-style"></i> Spacing & Margins</h4>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label">Image Spacing (mm)</label>
+                                        <div class="print-size-control">
+                                            <input type="number" id="imageSpacingInput" class="size-input" min="0" max="50" value="10">
+                                            <span class="size-unit">mm</span>
+                                            <input type="range" id="imageSpacingSlider" min="0" max="50" value="10" step="1" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label">Page Margin (mm)</label>
+                                        <div class="print-size-control">
+                                            <input type="number" id="pageMarginInput" class="size-input" min="5" max="50" value="15">
+                                            <span class="size-unit">mm</span>
+                                            <input type="range" id="pageMarginSlider" min="5" max="50" value="15" step="1" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="showBorders" checked>
+                                        <label for="showBorders">Show borders</label>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="showPageNumbers" checked>
+                                        <label for="showPageNumbers">Show page numbers</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Quality & Output -->
+                                <div class="print-edit-group">
+                                    <h4><i class="fas fa-cog"></i> Quality & Output</h4>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label">Print Quality (DPI)</label>
+                                        <div class="slider-container">
+                                            <input type="range" id="printQualitySlider" min="72" max="300" value="150" step="1">
+                                            <span class="slider-value" id="printQualityValue">150</span>
+                                        </div>
+                                        <div class="range-display">
+                                            <span class="range-min">72</span>
+                                            <span class="range-max">300</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="optimizeForPrint" checked>
+                                        <label for="optimizeForPrint">Optimize for print</label>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="preserveAspectRatio" checked>
+                                        <label for="preserveAspectRatio">Preserve aspect ratio</label>
+                                    </div>
+                                    
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="grayscalePrint">
+                                        <label for="grayscalePrint">Grayscale printing</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="preview-controls">
+                                <button class="btn btn-success" id="applyPrintSettingsBtn">
+                                    <i class="fas fa-check"></i> Apply Settings
+                                </button>
+                                <button class="btn" id="resetPrintSettingsBtn">
+                                    <i class="fas fa-undo"></i> Reset Settings
+                                </button>
+                                <button class="btn btn-info" id="previewPrintBtn">
+                                    <i class="fas fa-eye"></i> Preview Changes
+                                </button>
+                            </div>
+                        </div>
                         
                         <div class="print-preview-controls no-print">
                             <button class="btn btn-success" id="printAllBtn">
@@ -1050,6 +1376,30 @@
         const newConversionBtn = document.getElementById('newConversionBtn');
         const backToEditorBtn = document.getElementById('backToEditorBtn');
         
+        // New Print Edit Elements
+        const imageSizeSlider = document.getElementById('imageSizeSlider');
+        const imageSizeValue = document.getElementById('imageSizeValue');
+        const maxHeightInput = document.getElementById('maxHeightInput');
+        const maxHeightSlider = document.getElementById('maxHeightSlider');
+        const maxWidthSlider = document.getElementById('maxWidthSlider');
+        const maxWidthValue = document.getElementById('maxWidthValue');
+        const imageSpacingInput = document.getElementById('imageSpacingInput');
+        const imageSpacingSlider = document.getElementById('imageSpacingSlider');
+        const pageMarginInput = document.getElementById('pageMarginInput');
+        const pageMarginSlider = document.getElementById('pageMarginSlider');
+        const printQualitySlider = document.getElementById('printQualitySlider');
+        const printQualityValue = document.getElementById('printQualityValue');
+        const applyPrintSettingsBtn = document.getElementById('applyPrintSettingsBtn');
+        const resetPrintSettingsBtn = document.getElementById('resetPrintSettingsBtn');
+        const previewPrintBtn = document.getElementById('previewPrintBtn');
+        const fitToPage = document.getElementById('fitToPage');
+        const centerImages = document.getElementById('centerImages');
+        const showBorders = document.getElementById('showBorders');
+        const showPageNumbers = document.getElementById('showPageNumbers');
+        const optimizeForPrint = document.getElementById('optimizeForPrint');
+        const preserveAspectRatio = document.getElementById('preserveAspectRatio');
+        const grayscalePrint = document.getElementById('grayscalePrint');
+        
         // UI Elements
         const loadingOverlay = document.getElementById('loadingOverlay');
         const loadingText = document.getElementById('loadingText');
@@ -1067,6 +1417,24 @@
             saturation: 100,
             blur: 0,
             filter: 'none'
+        };
+        
+        // Print Settings State
+        let printSettings = {
+            layout: 'single',
+            imageSize: 100,
+            maxHeight: 180,
+            maxWidth: 90,
+            imageSpacing: 10,
+            pageMargin: 15,
+            printQuality: 150,
+            fitToPage: true,
+            centerImages: true,
+            showBorders: true,
+            showPageNumbers: false, // Changed to false - don't show in print
+            optimizeForPrint: true,
+            preserveAspectRatio: true,
+            grayscalePrint: false
         };
 
         // Initialize
@@ -1115,7 +1483,7 @@
             prevPageBtn.addEventListener('click', () => navigatePage(-1));
             nextPageBtn.addEventListener('click', () => navigatePage(1));
             
-            // Slider events
+            // Editor slider events
             brightnessSlider.addEventListener('input', updateFilterValue);
             contrastSlider.addEventListener('input', updateFilterValue);
             saturationSlider.addEventListener('input', updateFilterValue);
@@ -1139,6 +1507,44 @@
                 });
             });
             
+            // Print edit events
+            imageSizeSlider.addEventListener('input', updatePrintSliderValue);
+            maxHeightInput.addEventListener('input', updatePrintHeight);
+            maxHeightSlider.addEventListener('input', updatePrintHeight);
+            maxWidthSlider.addEventListener('input', updatePrintSliderValue);
+            imageSpacingInput.addEventListener('input', updatePrintSpacing);
+            imageSpacingSlider.addEventListener('input', updatePrintSpacing);
+            pageMarginInput.addEventListener('input', updatePrintMargin);
+            pageMarginSlider.addEventListener('input', updatePrintMargin);
+            printQualitySlider.addEventListener('input', updatePrintSliderValue);
+            
+            // Print layout presets
+            document.querySelectorAll('.print-preset').forEach(preset => {
+                preset.addEventListener('click', function() {
+                    document.querySelectorAll('.print-preset').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    printSettings.layout = this.getAttribute('data-layout');
+                    applyPrintSettings();
+                });
+            });
+            
+            // Print checkboxes
+            fitToPage.addEventListener('change', updatePrintSettings);
+            centerImages.addEventListener('change', updatePrintSettings);
+            showBorders.addEventListener('change', updatePrintSettings);
+            showPageNumbers.addEventListener('change', updatePrintSettings);
+            optimizeForPrint.addEventListener('change', updatePrintSettings);
+            preserveAspectRatio.addEventListener('change', updatePrintSettings);
+            grayscalePrint.addEventListener('change', updatePrintSettings);
+            
+            // Print action buttons
+            applyPrintSettingsBtn.addEventListener('click', applyPrintSettings);
+            resetPrintSettingsBtn.addEventListener('click', resetPrintSettings);
+            previewPrintBtn.addEventListener('click', previewPrintChanges);
+            
+            // Initialize print settings
+            initializePrintSettings();
+            
             // Show initial instructions
             showToast('Ready to convert PDFs to WebP!', 'success');
         }
@@ -1161,6 +1567,116 @@
 
         function hideLoading() {
             loadingOverlay.style.display = 'none';
+        }
+
+        // Initialize print settings
+        function initializePrintSettings() {
+            // Set initial values
+            imageSizeValue.textContent = `${printSettings.imageSize}%`;
+            maxHeightInput.value = printSettings.maxHeight;
+            maxHeightSlider.value = printSettings.maxHeight;
+            maxWidthValue.textContent = `${printSettings.maxWidth}%`;
+            imageSpacingInput.value = printSettings.imageSpacing;
+            imageSpacingSlider.value = printSettings.imageSpacing;
+            pageMarginInput.value = printSettings.pageMargin;
+            pageMarginSlider.value = printSettings.pageMargin;
+            printQualityValue.textContent = printSettings.printQuality;
+            
+            // Set checkboxes
+            fitToPage.checked = printSettings.fitToPage;
+            centerImages.checked = printSettings.centerImages;
+            showBorders.checked = printSettings.showBorders;
+            showPageNumbers.checked = printSettings.showPageNumbers; // False by default
+            optimizeForPrint.checked = printSettings.optimizeForPrint;
+            preserveAspectRatio.checked = printSettings.preserveAspectRatio;
+            grayscalePrint.checked = printSettings.grayscalePrint;
+        }
+
+        // Print edit functions
+        function updatePrintSliderValue(e) {
+            const slider = e.target;
+            const value = slider.value;
+            const id = slider.id;
+            
+            switch(id) {
+                case 'imageSizeSlider':
+                    imageSizeValue.textContent = `${value}%`;
+                    printSettings.imageSize = parseInt(value);
+                    break;
+                case 'maxWidthSlider':
+                    maxWidthValue.textContent = `${value}%`;
+                    printSettings.maxWidth = parseInt(value);
+                    break;
+                case 'printQualitySlider':
+                    printQualityValue.textContent = value;
+                    printSettings.printQuality = parseInt(value);
+                    break;
+            }
+        }
+
+        function updatePrintHeight(e) {
+            const value = e.target.value;
+            maxHeightInput.value = value;
+            maxHeightSlider.value = value;
+            printSettings.maxHeight = parseInt(value);
+        }
+
+        function updatePrintSpacing(e) {
+            const value = e.target.value;
+            imageSpacingInput.value = value;
+            imageSpacingSlider.value = value;
+            printSettings.imageSpacing = parseInt(value);
+        }
+
+        function updatePrintMargin(e) {
+            const value = e.target.value;
+            pageMarginInput.value = value;
+            pageMarginSlider.value = value;
+            printSettings.pageMargin = parseInt(value);
+        }
+
+        function updatePrintSettings() {
+            printSettings.fitToPage = fitToPage.checked;
+            printSettings.centerImages = centerImages.checked;
+            printSettings.showBorders = showBorders.checked;
+            printSettings.showPageNumbers = showPageNumbers.checked;
+            printSettings.optimizeForPrint = optimizeForPrint.checked;
+            printSettings.preserveAspectRatio = preserveAspectRatio.checked;
+            printSettings.grayscalePrint = grayscalePrint.checked;
+        }
+
+        function applyPrintSettings() {
+            updatePrintSettings();
+            displayWebPOnA4Pages();
+            showToast('Print settings applied successfully!', 'success');
+        }
+
+        function resetPrintSettings() {
+            printSettings = {
+                layout: 'single',
+                imageSize: 100,
+                maxHeight: 180,
+                maxWidth: 90,
+                imageSpacing: 10,
+                pageMargin: 15,
+                printQuality: 150,
+                fitToPage: true,
+                centerImages: true,
+                showBorders: true,
+                showPageNumbers: false, // Keep false on reset
+                optimizeForPrint: true,
+                preserveAspectRatio: true,
+                grayscalePrint: false
+            };
+            
+            initializePrintSettings();
+            displayWebPOnA4Pages();
+            showToast('Print settings reset to default', 'warning');
+        }
+
+        function previewPrintChanges() {
+            displayWebPOnA4Pages();
+            showToast('Preview updated with current settings', 'info');
         }
 
         // Drag and drop setup
@@ -1769,7 +2285,7 @@
             }
         }
 
-        // Display WebP images on A4 pages - FIXED NO GAP
+        // Display WebP images on A4 pages with print settings - CLEAN VERSION (NO HEADER/INFO)
         function displayWebPOnA4Pages() {
             if (convertedPages.length === 0) {
                 a4PagesContainer.innerHTML = '<p style="text-align: center; color: #f44336; padding: 40px;">No WebP images were generated.</p>';
@@ -1779,12 +2295,19 @@
             // Clear previous content
             a4PagesContainer.innerHTML = '';
 
-            // Group pages (max 3 per A4 for better fit)
-            const pagesPerA4 = 3;
-            const a4Pages = [];
+            // Determine images per page based on layout
+            let imagesPerPage;
+            switch(printSettings.layout) {
+                case 'double': imagesPerPage = 2; break;
+                case 'triple': imagesPerPage = 3; break;
+                case 'quad': imagesPerPage = 4; break;
+                default: imagesPerPage = 1; // single
+            }
 
-            for (let i = 0; i < convertedPages.length; i += pagesPerA4) {
-                a4Pages.push(convertedPages.slice(i, i + pagesPerA4));
+            // Group pages
+            const a4Pages = [];
+            for (let i = 0; i < convertedPages.length; i += imagesPerPage) {
+                a4Pages.push(convertedPages.slice(i, i + imagesPerPage));
             }
 
             // Create A4 pages
@@ -1792,29 +2315,99 @@
                 const a4Page = document.createElement('div');
                 a4Page.className = 'a4-page';
                 
-                // Page header
-                const header = document.createElement('div');
-                header.className = 'page-header';
-                header.innerHTML = `📄 Page ${pageIndex + 1} of ${a4Pages.length} <span class="webp-badge">WebP</span>`;
-                a4Page.appendChild(header);
+                // Apply page margin
+                a4Page.style.padding = `${printSettings.pageMargin}mm`;
+                
+                // REMOVED: Page header (show page numbers is false by default)
+                // Only show header in preview if explicitly enabled
+                if (printSettings.showPageNumbers) {
+                    const header = document.createElement('div');
+                    header.className = 'page-header';
+                    header.innerHTML = `📄 Page ${pageIndex + 1} of ${a4Pages.length} <span class="webp-badge">WebP</span>`;
+                    a4Page.appendChild(header);
+                }
 
                 // WebP container
                 const webpContainer = document.createElement('div');
                 webpContainer.className = 'webp-container';
+                
+                // Apply spacing between images
+                webpContainer.style.gap = `${printSettings.imageSpacing}mm`;
+                
+                // Calculate available height for images
+                const headerHeight = printSettings.showPageNumbers ? 80 : 0; // 0 when no header
+                const availableHeight = 297 - (printSettings.pageMargin * 2) - headerHeight;
+                const imageSpacingTotal = printSettings.imageSpacing * (pageGroup.length - 1);
+                const maxImageHeight = (availableHeight - imageSpacingTotal) / pageGroup.length;
 
                 // Add each WebP
                 pageGroup.forEach((webp, index) => {
                     const webpItem = document.createElement('div');
                     webpItem.className = 'webp-item';
                     
+                    // Apply border if enabled (for preview only, removed in print)
+                    if (printSettings.showBorders) {
+                        webpItem.style.border = '2px solid #e0e0e0';
+                    } else {
+                        webpItem.style.border = 'none';
+                    }
+                    
+                    // Apply background for better preview visibility
+                    if (printSettings.optimizeForPrint) {
+                        webpItem.style.background = '#ffffff';
+                    }
+                    
+                    // Apply grayscale if enabled
+                    if (printSettings.grayscalePrint) {
+                        webpItem.style.filter = 'grayscale(100%)';
+                    }
+                    
                     const img = document.createElement('img');
                     img.className = 'webp-preview';
                     img.src = webp.dataUrl;
                     img.alt = webp.name;
                     img.loading = 'lazy';
-                    img.style.maxHeight = '200px'; // Consistent height
+                    
+                    // Apply size settings
+                    let maxHeight = Math.min(printSettings.maxHeight, maxImageHeight);
+                    let maxWidth = printSettings.maxWidth;
+                    
+                    // Apply scaling
+                    maxHeight = maxHeight * (printSettings.imageSize / 100);
+                    maxWidth = maxWidth * (printSettings.imageSize / 100);
+                    
+                    // Set image styles
+                    img.style.maxHeight = `${maxHeight}mm`;
+                    img.style.maxWidth = `${maxWidth}%`;
+                    
+                    // Fit to page if enabled
+                    if (printSettings.fitToPage) {
+                        img.style.width = 'auto';
+                        img.style.height = 'auto';
+                    }
+                    
+                    // Center images if enabled
+                    if (printSettings.centerImages) {
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                    }
+                    
+                    // Preserve aspect ratio
+                    if (printSettings.preserveAspectRatio) {
+                        img.style.objectFit = 'contain';
+                    }
                     
                     webpItem.appendChild(img);
+                    
+                    // REMOVED: Image info (not shown in preview or print)
+                    // Only show info in preview if explicitly enabled
+                    if (printSettings.showPageNumbers) {
+                        const info = document.createElement('div');
+                        info.className = 'webp-info';
+                        info.textContent = `${webp.sourceFile} - Page ${webp.pageNumber}`;
+                        webpItem.appendChild(info);
+                    }
+                    
                     webpContainer.appendChild(webpItem);
                 });
 
@@ -1823,7 +2416,7 @@
             });
         }
 
-        // Print all pages with proper handling - FIXED NO GAP
+        // Print all pages with CLEAN OUTPUT (no headers/info)
         function printAllPages() {
             if (convertedPages.length === 0) {
                 showToast('No pages to print', 'error');
@@ -1871,7 +2464,7 @@
         function triggerPrint() {
             hideLoading();
             
-            // Add print-specific styles that remove all gaps
+            // Add print-specific styles - CLEAN PRINT (NO HEADERS/INFO)
             const style = document.createElement('style');
             style.innerHTML = `
                 @media print {
@@ -1882,7 +2475,7 @@
                         background: white !important;
                     }
                     
-                    /* Hide everything except print content */
+                    /* Hide everything except images for printing */
                     body * {
                         visibility: hidden !important;
                         margin: 0 !important;
@@ -1919,31 +2512,55 @@
                         width: 210mm !important;
                         height: 297mm !important;
                         margin: 0 !important;
-                        padding: 15mm !important;
+                        padding: ${printSettings.pageMargin}mm !important;
                         box-shadow: none !important;
-                        border: 1px solid #ccc !important;
+                        border: none !important; /* Remove border for clean print */
                         background: white !important;
                         page-break-after: always !important;
                         page-break-inside: avoid !important;
-                        position: relative !important;
+                        position: relative;
                         display: block !important;
+                    }
+                    
+                    /* REMOVE ALL HEADERS AND INFO FOR PRINT */
+                    .page-header,
+                    .webp-info,
+                    .webp-badge {
+                        display: none !important;
+                        visibility: hidden !important;
+                    }
+                    
+                    .webp-container {
+                        height: 100% !important; /* Full height since no header */
+                        gap: ${printSettings.imageSpacing}mm !important;
+                        padding: 0 !important;
+                    }
+                    
+                    .webp-item {
+                        margin-bottom: ${printSettings.imageSpacing}mm !important;
+                        border: none !important; /* Remove border for clean print */
+                        background: transparent !important; /* Transparent background */
+                        padding: 0 !important; /* Remove padding */
+                        border-radius: 0 !important; /* Remove border radius */
+                        box-shadow: none !important; /* Remove shadow */
+                        page-break-inside: avoid !important;
+                        filter: ${printSettings.grayscalePrint ? 'grayscale(100%)' : 'none'} !important;
+                    }
+                    
+                    .webp-preview {
+                        max-height: ${printSettings.maxHeight * (printSettings.imageSize / 100)}mm !important;
+                        max-width: ${printSettings.maxWidth * (printSettings.imageSize / 100)}% !important;
+                        border: none !important; /* Remove image border */
+                        background: transparent !important; /* Transparent background */
+                        display: block;
+                        margin-left: auto;
+                        margin-right: auto;
+                        object-fit: ${printSettings.preserveAspectRatio ? 'contain' : 'fill'} !important;
                     }
                     
                     /* Remove any remaining gaps */
                     .a4-page:last-child {
                         page-break-after: auto !important;
-                    }
-                    
-                    .webp-container {
-                        height: calc(100% - 50px) !important;
-                    }
-                    
-                    .webp-item {
-                        margin-bottom: 10mm !important;
-                    }
-                    
-                    .webp-preview {
-                        max-height: 180mm !important;
                     }
                 }
             `;
@@ -1962,7 +2579,7 @@
 
         // Handle afterprint event to restore UI
         window.addEventListener('afterprint', function() {
-            showToast('Print completed!', 'success');
+            showToast('Print completed! Clean print (no headers/info)', 'success');
         });
 
         // Download all WebP images
@@ -2040,6 +2657,9 @@
             
             // Clear preview
             a4PagesContainer.innerHTML = '';
+            
+            // Reset print settings
+            resetPrintSettings();
             
             showToast('Ready for new conversion!', 'success');
         }
